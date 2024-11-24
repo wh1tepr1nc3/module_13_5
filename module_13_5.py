@@ -5,15 +5,16 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.dispatcher import FSMContext
 import asyncio
 
-api = ''
+api = '7214348790:AAHLRzW5NENdHcnLY9znrVIDC--6bsuUrJo'
 bot = Bot(token=api)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 kb = ReplyKeyboardMarkup(resize_keyboard=True)
 button = KeyboardButton(text='Рассчитать')
 button2 = KeyboardButton(text='Информация')
-kb.add(button)
-kb.add(button2)
+# kb.add(button)
+# kb.add(button2)
+kb.row(button, button2)
 
 
 class UserState(StatesGroup):
@@ -24,12 +25,8 @@ class UserState(StatesGroup):
 
 @dp.message_handler(commands=['start'])
 async def start(message):
-    await message.answer('Привет! Я бот помогающий твоему здоровью.', reply_markup =kb)
+    await message.answer('Привет! Я бот помогающий твоему здоровью.', reply_markup=kb)
 
-
-@dp.message_handler()
-async def all_message(message):
-    await message.answer('Введите команду /start, чтобы начать общение.')
 
 @dp.message_handler(text='Информация')
 async def inform(message):
@@ -45,7 +42,7 @@ async def set_age(message):
 @dp.message_handler(state=UserState.age)
 async def set_growth(message, state):
     await state.update_data(age=message.text)
-    data = await state.get_data()
+    # data = await state.get_data()
     await message.answer('Введите свой рост:')
     await UserState.growth.set()
 
@@ -53,7 +50,7 @@ async def set_growth(message, state):
 @dp.message_handler(state=UserState.growth)
 async def all_weight(message, state):
     await state.update_data(growth=message.text)
-    data = await state.get_data()
+    # data = await state.get_data()
     await message.answer('Введите свой вес:')
     await UserState.weight.set()
 
@@ -66,6 +63,11 @@ async def send_calories(message, state):
     await message.answer(f"Ваша норма калорий в сутки: {result}")
     await UserState.weight.set()
     await state.finish()
+
+
+@dp.message_handler()
+async def all_message(message):
+    await message.answer('Введите команду /start, чтобы начать общение.')
 
 
 if __name__ == '__main__':
